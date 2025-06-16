@@ -27,4 +27,4 @@ Lá você encontrará:
 > Acompanhe as issues abertas e fechadas para entender melhor o funcionamento e os planos do projeto.
 
 ## 🚀 Como iniciar
-
+.... em desenvolvimento
