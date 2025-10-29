@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+  MODERATOR
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_TO_SAY
+}
+
+model Users {
+  id       String @id @default(cuid()) 
+  fullName String @map("full_name")
+  email    String @unique
+  password String
+  roles    Role[]
+  isActive Boolean @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  profile   Profiles?
+  address   Addresses?
+  phones    Phones[]
+  documents Documents[]
+
+  @@map("users")
+}
+
+model Profiles {
+  id        String   @id @default(cuid())
+  bio       String?
+  birthdate DateTime? @map("birth_date")
+  avatar    String?  @map("avatar_url")
+  gender    Gender?  
+  userId    String   @unique
+  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
+}
+
+model Addresses {
+  id        String   @id @default(cuid())
+  street    String
+  city      String
+  state     String
+  zipCode   String   @map("zip_code")
+  country   String
+  userId    String   @unique
+  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("addresses")
+}
+
+model Phones {
+  id        String   @id @default(cuid())
+  number    String
+  type      String
+  userId    String
+  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("phones")
+  @@unique([number, userId])
+}
+
+model Documents {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  filename    String
+  filepath    String
+  mimetype    String
+  size        Int
+  userId      String
+  user        Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("documents")
+}
